@@ -1,0 +1,71 @@
+const int ledPinG = 13;      // LED Hijau
+const int ledPinY = 12;      // LED Kuning
+const int ledPinR = 25;      // LED Merah
+const int buttonPin = 34;    // Tombol
+
+const long interval3 = 3000; 
+const long interval1 = 1000;
+long dinterval = 3000;       
+int currentState = 0;        
+unsigned long previousMillis = 0;
+int tombolTerakhir = HIGH;
+int red = 0;
+int stop = 0;
+
+void setup() {
+  pinMode(ledPinG, OUTPUT);
+  pinMode(ledPinY, OUTPUT);
+  pinMode(ledPinR, OUTPUT);
+  pinMode(buttonPin, INPUT_PULLUP);
+}
+
+void loop() {
+  unsigned long currentMillis = millis();
+  int tombol = digitalRead(buttonPin); 
+  if (tombol != tombolTerakhir) {
+    if (tombol == LOW && red == 0) {
+      stop = 1;   
+    }
+    tombolTerakhir = tombol; 
+  }
+  if (stop == 1) {
+    dinterval = 5000;  
+  }
+
+  switch (currentState) {
+    case 0:
+      digitalWrite(ledPinG, HIGH);  
+      digitalWrite(ledPinY, LOW);
+      digitalWrite(ledPinR, LOW);
+      if (currentMillis - previousMillis >= interval3) {
+         
+        currentState = 1;
+        previousMillis = currentMillis;
+      }
+      break;
+
+    case 1:
+      digitalWrite(ledPinG, LOW);
+      digitalWrite(ledPinY, HIGH); 
+      digitalWrite(ledPinR, LOW);
+      if (currentMillis - previousMillis >= interval1) {
+        currentState = 2; 
+        previousMillis = currentMillis;
+      }
+      break;
+
+    case 2: 
+      digitalWrite(ledPinG, LOW);
+      digitalWrite(ledPinY, LOW);
+      digitalWrite(ledPinR, HIGH);  
+      red = 1;
+      if (currentMillis - previousMillis >= dinterval) {
+        dinterval = 3000;
+        currentState = 0;  
+        previousMillis = currentMillis;
+        stop = 0;
+        red = 0;  
+      }
+      break;
+  }
+}
