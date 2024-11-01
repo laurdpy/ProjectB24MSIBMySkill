@@ -1,0 +1,56 @@
+//STUDI INDEPENDEN INTERNET OF THINGS DEVELOPMENT SMART INDUSTRY MYSKILL
+//B24-LAURENSIA DELLA PUTRI YOLANDA
+
+//ASSESSMENT 18 KONSEP KONEKTIFITAS DALAM IOT
+
+#include <WiFi.h>
+#include "time.h"
+
+const char* ssid = "Wokwi-GUEST";
+const char* password = "";
+
+// Pengaturan server NTP
+const char* ntpServer = "pool.ntp.org";
+const long gmtOffset_sec = 25200;    // Offset GMT+7 dalam detik (7 * 3600)
+const int daylightOffset_sec = 0;    // Tidak ada daylight saving di Indonesia
+
+void setup() {
+  Serial.begin(115200); 
+
+  // Menghubungkan ke WiFi
+  Serial.printf("Menghubungkan ke %s ", ssid);
+  WiFi.begin(ssid, password);
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.print(".");
+  }
+  Serial.println(" TERHUBUNG!");
+
+  // Konfigurasi waktu dengan offset GMT dan server NTP
+  configTime(gmtOffset_sec, daylightOffset_sec, ntpServer);
+  delay(2000);
+
+  // Mendapatkan dan mencetak waktu dalam format WIB
+  struct tm timeinfo;
+  if (!getLocalTime(&timeinfo)) {
+    Serial.println("Gagal mendapatkan waktu");
+    return;
+  }
+
+  // Format tampilan waktu
+  char timeStringBuff[50];
+  strftime(timeStringBuff, sizeof(timeStringBuff), "%A, %B %d, %Y %I:%M:%S %p", &timeinfo);
+  Serial.println(timeStringBuff);
+
+  // Mendapatkan dan mencetak waktu dalam format EPOCH
+  time_t now;
+  time(&now);
+  Serial.println(now);
+
+  // Memutuskan koneksi WiFi karena tidak diperlukan lagi
+  WiFi.disconnect(true);
+  WiFi.mode(WIFI_OFF);
+}
+
+void loop() {
+}
